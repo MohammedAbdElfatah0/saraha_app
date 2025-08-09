@@ -4,7 +4,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start:dev": "node --watch ."
+    "start:dev": "node --watch src/."
   },
   "keywords": [],
   "author": "",
