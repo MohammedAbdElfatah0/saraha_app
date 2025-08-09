@@ -15,10 +15,15 @@ const userSchema = new Schema({
     },
     email: {
         type: String,
-        required: true,
-        unique: true,
+        required: function (params) {
+            if (this.phoneNumber) {
+                return false; // Email is not required if phoneNumber is provided
+            }
+            return true; // Email is required if phoneNumber is not provided
+        },
         trim: true,
         lowercase: true,
+        // unique: true,
     },
     password: {
         type: String,
@@ -26,24 +31,30 @@ const userSchema = new Schema({
     },
     phoneNumber: {
         type: String,
-        required: true,
-        unique: true,
+
+        required: function () {
+            if (this.email) {
+                return false; // phoneNumber is not required if phoneNumber is provided
+            }
+            return true; // phoneNumber is required if phoneNumber is not provided
+        },
         // trim: true,
+        // unique: true,
     },
     dob: {
         type: Date,
     }
 
 
-}, 
-{
-    timestamps: true,
-})
+},
+    {
+        timestamps: true,
+    })
 
 userSchema.virtual("fullName",).get(function () {
     return `${this.firstName} ${this.lastName}`;
 });
-userSchema.virtual("fullname").set(function (value) {
+userSchema.virtual("fullName").set(function (value) {
     //  [this.firstName, this.lastName] = value.split(" ");
     const [firstName, lastName] = value.split(" ");
     this.firstName = firstName;
@@ -56,4 +67,4 @@ userSchema.virtual("age").get(function () {
     return new Date().getFullYear() - this.dob.getFullYear();
 });
 
-export const user = model("User", userSchema);
+export const User = model("User", userSchema);
