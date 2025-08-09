@@ -21,7 +21,8 @@ export const register = async (req, res) => {
                         { phoneNumber: { $ne: null } },
                         { phoneNumber }
                     ]
-                },]
+                },
+            ]
         }
         );
         if (userExists) {
@@ -33,7 +34,7 @@ export const register = async (req, res) => {
         const user = new User({
             fullName,
             email,
-            password:bcrypt.hashSync(password, 10), // Hash the password
+            password: bcrypt.hashSync(password, 10), // Hash the password
             phoneNumber,
             dob
         });
@@ -48,5 +49,54 @@ export const register = async (req, res) => {
 
         return res.status(error.cause || 500).json({ message: error.message, success: false });
 
+    }
+}
+
+export const login = async (req, res, next) => {
+    const { email, phoneNumber, password } = req.body;
+    try {
+
+        const userExist = await User.findOne(
+            {
+                $or: [
+                    {
+                        $and: [
+                            { email: { $exists: true } },
+                            { email: { $ne: null } },
+                            { email }
+                        ]
+                    },
+                    {
+                        $and: [
+                            { phoneNumber: { $exists: true } },
+                            { phoneNumber: { $ne: null } },
+                            { phoneNumber }
+                        ]
+                    },
+                ]
+            }
+        );
+
+
+        if (!userExist) {
+            throw new Error("User not found", { cause: 404 });
+        }
+        /// Check if the password is valid
+        const isPasswordValid = bcrypt.compareSync(password, userExist.password);
+        if (!isPasswordValid) {
+            throw new Error("Invalid password", { cause: 401 });
+        }
+
+        // todo:
+        //generate a token for the user
+
+        //return response
+        return res.status(200).json({
+            message: 'Login successful',
+            success: true,
+            //token: token, // Assuming you have a token generation logic 
+        });
+    } catch (error) {
+        return res.status(error.cause || 500).json({ message: error.message, success: false });
     }
 }
