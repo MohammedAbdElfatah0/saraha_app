@@ -6,12 +6,12 @@ export async function sendEmail({ to, subject, html }) {
         host: "smtp.gmail.com",
         port: 587,
         auth: {
-            user: "",//todo .env 
-            pass: ""//todo .env 
+            user: "hamo02abdelfatah@gmail.com",//todo .env 
+            pass: "fodbbmpxlholltyx"//todo .env 
         }
     });
     await transport.sendMail({
-        from: "'saraha'<>",
+        from: "'saraha'<hamo02abdelfatah@gmail.com>",
         to,
         subject,
         html,
