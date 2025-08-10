@@ -14,7 +14,7 @@ export async function sendEmail({ to, subject, html }) {
         from: "'saraha'<hamo02abdelfatah@gmail.com>",
         to,
         subject,
-        html,
+        html, 
 
     })
 };

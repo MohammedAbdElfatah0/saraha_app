@@ -68,7 +68,7 @@ export const register = async (req, res) => {
         return res.status(error.cause || 500).json({ message: error.message, success: false, error: error.stack });
 
     }
-}
+} 
 
 export const verifyAccount = async (req, res, next) => {
     try {
