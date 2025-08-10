@@ -43,7 +43,17 @@ const userSchema = new Schema({
     },
     dob: {
         type: Date,
-    }
+    },
+    isVerified: {
+        type: Boolean,
+        default: false,
+    },
+    otp: {
+        type: Number,
+    },
+    otpExpiration: {
+        type: Date,
+    },
 
 
 },
