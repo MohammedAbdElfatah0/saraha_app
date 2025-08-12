@@ -1,8 +1,8 @@
 import { sendEmail } from '../../utils/email/index.js';
 import { User } from './../../DB/models/user.model.js';
-import bcrypt from 'bcrypt';
 import { generateOtp } from './../../utils/otp/index.js';
-import e from 'express';
+import { comparePassword, encryptData, hashPassword ,} from '../../utils/security/index.js';
+
 
 export const register = async (req, res) => {
     try {
@@ -37,8 +37,8 @@ export const register = async (req, res) => {
         const user = new User({
             fullName,
             email,
-            password: bcrypt.hashSync(password, 10), // Hash the password
-            phoneNumber,
+            password:hashPassword(password), // Hash the password
+            phoneNumber:encryptData(phoneNumber), // Encrypt the phone number
             dob
         });
         //generate otp
@@ -157,7 +157,7 @@ export const login = async (req, res, next) => {
             throw new Error("User not found", { cause: 404 });
         }
         /// Check if the password is valid
-        const isPasswordValid = bcrypt.compareSync(password, userExist.password);
+        const isPasswordValid = comparePassword(password, userExist.password);
         if (!isPasswordValid) {
             throw new Error("Invalid password", { cause: 401 });
         }

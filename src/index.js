@@ -1,8 +1,10 @@
 import express from 'express';
 import { bootstrap } from './app.controller.js';
 const app = express();
-const port = 3000;
+const port = process.env.PORT ;
+
 bootstrap({ app, express });
+
 app.listen(port, () => {
-    console.log('Server is running on port :3000');
+    console.log(`Server is running on port :${port}`);
 });

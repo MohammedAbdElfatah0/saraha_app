@@ -4,7 +4,8 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start:dev": "node --watch src/."
+    "start:dev": "node --watch src/.",
+    "start:local": "node --env-file=config/local.env --watch src/."
   },
   "keywords": [],
   "author": "",
@@ -12,6 +13,7 @@
   "description": "",
   "dependencies": {
     "bcrypt": "^6.0.0",
+    "crypto-js": "^4.2.0",
     "express": "^5.1.0",
     "mongoose": "^8.17.1",
     "nodemailer": "^7.0.5"

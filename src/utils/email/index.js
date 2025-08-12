@@ -2,19 +2,19 @@
 import nodemailer from "nodemailer";
 export async function sendEmail({ to, subject, html }) {
     const transport = nodemailer.createTransport({
-        service: "gmail",
-        host: "smtp.gmail.com",
-        port: 587,
+        // host: process.env.EMAIL_HOST , // todo env
+        service: process.env.EMAIL_SERVICE , // todo env
+        port: process.env.EMAIL_PORT , // todo env
+        secure:true,
         auth: {
-            user: "hamo02abdelfatah@gmail.com",//todo .env 
-            pass: "fodbbmpxlholltyx"//todo .env 
+            user: process.env.USER_EMAIL,//todo .env 
+            pass: process.env.PASSWORD_EMAIL,//todo .env 
         }
     });
     await transport.sendMail({
-        from: "'saraha'<hamo02abdelfatah@gmail.com>",
+        from: "'saraha App'<hamo02abdelfatah@gmail.com>",
         to,
         subject,
         html, 
-
     })
 };

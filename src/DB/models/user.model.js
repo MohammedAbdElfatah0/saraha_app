@@ -16,7 +16,7 @@ const userSchema = new Schema({
     },
     email: {
         type: String,
-        required: function (params) {
+        required: function () {
             if (this.phoneNumber) {
                 return false; // Email is not required if phoneNumber is provided
             }
@@ -76,7 +76,6 @@ userSchema.virtual("fullName").set(function (value) {
 
 
 userSchema.virtual("age").get(function () {
-    //new Date().getFullYear() - new Data(this.dob).getFullYear();
     return new Date().getFullYear() - this.dob.getFullYear();
 });
 
