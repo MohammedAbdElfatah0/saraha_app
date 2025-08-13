@@ -167,14 +167,17 @@ export const login = async (req, res, next) => {
 };
 
 export const logout = async (req, res, next) => {
-    const { refreshToken } = req.headers.authorization;
-
-    if (!refreshToken) {
-        throw new Error("Refresh token is required", { cause: 400 });
+    const { authorization } = req.headers;
+    console.log("Logout Refresh Token:", authorization);
+    if (!authorization) {
+        throw new Error("-Refresh- token is required", { cause: 400 });
     }
 
     // Delete the refresh token from the database
-    await RefreshToken.deleteOne({ token: refreshToken });
+    const isDelete = await RefreshToken.findOneAndDelete({ token: authorization });
+    if (!isDelete) {
+        throw new Error("token not found", { cause: 404 });
+    }
 
     return res.status(200).json({ message: "Logout successful", success: true });
 };
