@@ -5,4 +5,6 @@ authRouter.post("/register", authService.register);
 authRouter.post("/login", authService.login);
 authRouter.post("/verify-Account", authService.verifyAccount);
 authRouter.post("/resend-otp", authService.resendOtp);
+authRouter.post("/refresh-token", authService.refreshToken);
+authRouter.post("/logout", authService.logout);
 export default authRouter;
