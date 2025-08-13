@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 
 export function hashPassword(password) {
-    const saltRounds = process.env.SALTROUNDS;// todo env
+    const saltRounds = Number(process.env.SALTROUNDS);// todo env
     return bcrypt.hashSync(password, saltRounds);
 }
 

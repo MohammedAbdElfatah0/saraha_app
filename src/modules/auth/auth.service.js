@@ -5,7 +5,7 @@ import { comparePassword, encryptData, hashPassword ,} from '../../utils/securit
 
 
 export const register = async (req, res) => {
-    try {
+
         //get the user data from the request body
         const { fullName, email, password, phoneNumber, dob } = req.body;
         //check if the user already exists
@@ -63,15 +63,10 @@ export const register = async (req, res) => {
         return res.status(201).json({ message: 'User registered successfully' });
 
 
-    } catch (error) {
-
-        return res.status(error.cause || 500).json({ message: error.message, success: false, error: error.stack });
-
-    }
 } 
 
 export const verifyAccount = async (req, res, next) => {
-    try {
+
         const { email, otp } = req.body;
         const user = await User.findOne(
             {
@@ -91,14 +86,11 @@ export const verifyAccount = async (req, res, next) => {
 
         return res.status(200).json({ message: "Account verify successful", success: true })
 
-    } catch (error) {
-        return res.status(error.cause || 500).json({ message: error.message, success: false });
-    }
 };
 
 //resend otp 
 export const resendOtp = async (req, res, next) => {
-    try {
+
         //get data email,
         const { email } = req.body;
         //generated new otp
@@ -122,14 +114,10 @@ export const resendOtp = async (req, res, next) => {
         })
         //response
         return res.status(200).json({ message: "resend otp successfully", success: true });
-    } catch (error) {
-        return res.status(error.cause || 500).json({ message: error.message, success: false ,error: error.stack });
-    }
 };
 
 export const login = async (req, res, next) => {
     const { email, phoneNumber, password } = req.body;
-    try {
 
         const userExist = await User.findOne(
             {
@@ -171,7 +159,5 @@ export const login = async (req, res, next) => {
             success: true,
             //token: token, // Assuming you have a token generation logic 
         });
-    } catch (error) {
-        return res.status(error.cause || 500).json({ message: error.message, success: false });
-    }
+
 };
