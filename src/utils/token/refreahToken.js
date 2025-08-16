@@ -1,32 +1,29 @@
 import jwt from "jsonwebtoken";
 import RefreshToken from "../../DB/models/refresh.token.model.js";
+import { signToken } from "./signToken.js";
 
 async function generateNewAccessToken(refreshTokenValue) {
-  
+
 
     const savedToken = await RefreshToken.findOne({ token: refreshTokenValue });
-  
+
     if (!savedToken) {
-        throw new Error("No refresh token found for this user");
+        throw new Error("No refresh token found for this user", { cause: 401 });
     }
 
-    let decoded;
-    try {
-        decoded = jwt.verify(savedToken.token, process.env.JWT_REFRESH_SECRET);
-    } catch (err) {
-        throw new Error("Invalid or expired refresh token");
-    }
+    const decoded = jwt.verify(savedToken.token, process.env.JWT_REFRESH_SECRET);
+
     if (!decoded || !decoded.userId) {
-        throw new Error("Invalid token payload");
+        throw new Error("Invalid or expired token payload", { cause: 401 });
     }
-    const newAccessToken = jwt.sign(
+    const accessToken = signToken(
         { userId: decoded.userId },
         process.env.JWT_SECRET,
-        { expiresIn: process.env.JWT_EXPIRATION }
-    );
+        process.env.JWT_EXPIRATION
+    )
 
     return {
-        accessToken: newAccessToken,
+        accessToken,
     };
 }
 

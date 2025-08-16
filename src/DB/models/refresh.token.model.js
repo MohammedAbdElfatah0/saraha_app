@@ -8,6 +8,9 @@ const refreshTokenSchema = new Schema({
         type: String,
         required: true,
     },
+},{
+    timestamps: true,
+    // versionKey: false
 });
 const RefreshToken = model('RefreshToken', refreshTokenSchema);
 export default RefreshToken;
