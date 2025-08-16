@@ -139,13 +139,14 @@ export const login = async (req, res, next) => {
                         { phoneNumber }
                     ]
                 },
-            ]
+            ],
+            isVerified: true // Ensure the user is verified
         }
     );
 
 
     if (!userExist) {
-        throw new Error("User not found", { cause: 404 });
+        throw new Error("User not found or is not verified ", { cause: 404 });
     }
     /// Check if the password is valid
     const isPasswordValid = comparePassword(password, userExist.password);

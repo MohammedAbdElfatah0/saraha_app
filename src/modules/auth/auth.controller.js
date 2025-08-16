@@ -1,8 +1,10 @@
 import { Router } from 'express';
 import * as authService from './auth.service.js';
+import { validation } from '../../middleware/validation.js';
+import *as schemaValidation from './auth.validation.js';
 const authRouter = Router();
-authRouter.post("/register", authService.register);
-authRouter.post("/login", authService.login);
+authRouter.post("/register",validation(schemaValidation.registerSchema), authService.register);
+authRouter.post("/login",validation(schemaValidation.loginSchema), authService.login);
 authRouter.post("/verify-Account", authService.verifyAccount);
 authRouter.post("/resend-otp", authService.resendOtp);
 authRouter.post("/refresh-token", authService.refreshToken);
