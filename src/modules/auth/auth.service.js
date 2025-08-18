@@ -137,18 +137,18 @@ export const resendOtp = async (req, res, next) => {
 
     // check if otp still valid
     if (user.otp && user.otpExpiration > Date.now()) {
-        const timeLeft = Math.floor((user.otpExpiration - Date.now()) / 1000);
+        const timeLeft = Math.floor((user.otpExpiration - Date.now()) / 1000);// take time from db without expire  
 
       
         await sendEmail({
             to: email,
-            subject: "Verify your Account",
+            subject: "already sent",
             html: `<p>Your OTP is still valid: <b>${user.otp}</b>. It will expire in ${timeLeft} seconds.</p>`,
         });
 
-        return res.status(200).json({
+        return res.status(400).json({
             message: `OTP already sent. Still valid for ${timeLeft} seconds.`,
-            success: true,
+            success: false,
         });
     }
 
