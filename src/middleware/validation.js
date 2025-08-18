@@ -1,5 +1,3 @@
-import e from "express";
-
 export function validation(Schema) {
     return (req, res, next) => {
         const { error } = Schema.validate(req.body);

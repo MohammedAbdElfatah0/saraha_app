@@ -2,6 +2,7 @@
 import jwt from 'jsonwebtoken';
 import { User } from './../../DB/models/user.model.js';
 import { comparePassword, hashPassword } from "../../utils/security/hashing.js";
+import { verifyToken } from '../../utils/token/verifytoken.js';
 
 export const deleteAccount = async (req, res, next) => {
     const { userId } = req.params;
@@ -72,3 +73,25 @@ export const updataPassword = async (req, res, next) => {
 
 
 }
+
+export const upLoadPicture = async (req, res, next) => {
+    const token = req.headers;
+    const { id } = verifyToken(token);
+    const userExist = await User.findByIdAndUpdate(id,
+        {
+            profilePicture: req.file.path,
+        },
+        {
+            new: true
+        },
+    );
+    if (!userExist) {
+        throw new Error("user not found", { cause: 404 });
+    }
+    return res.status(201).json({
+        message: "upload picture successfully",
+        success: true,
+        data: userExist
+    });
+
+};

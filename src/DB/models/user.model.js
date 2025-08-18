@@ -55,6 +55,9 @@ const userSchema = new Schema({
     otpExpiration: {
         type: Date,
     },
+    profilePicture:{
+        type:String
+    }
 
 
 },
