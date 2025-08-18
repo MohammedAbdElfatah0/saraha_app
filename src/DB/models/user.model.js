@@ -55,9 +55,21 @@ const userSchema = new Schema({
     otpExpiration: {
         type: Date,
     },
-    profilePicture:{
-        type:String
-    }
+    failedAttempts: {
+        type: Number, default: 0
+    },
+    isBanned: {
+        type: Boolean, default: false
+    },
+    banExpiration: {
+        type: Date
+    },
+
+
+
+    profilePicture: {
+        type: String
+    },
 
 
 },

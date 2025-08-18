@@ -67,57 +67,107 @@ export const register = async (req, res) => {
 
 
 }
-
 export const verifyAccount = async (req, res, next) => {
-
     const { email, otp } = req.body;
-    const user = await User.findOne(
-        {
-            email,
-            otp,
-            otpExpiration: { $gt: Date.now() }
-        });
-    console.log(user);
+
+    const user = await User.findOne({ email });
+
     if (!user) {
-        throw new Error("Invalid otp ", { cause: 401 });
+        throw new Error("User not found", { cause: 404 });
     }
+
+    // check if user is banned
+    if (user.isBanned && user.banExpiration > Date.now()) {
+        return res.status(403).json({
+            message: "Too many failed attempts. Try again later.",
+            success: false,
+        });
+    }
+    console.log("req.body.otp:", otp, typeof otp);
+    console.log("user.otp:", user.otp, typeof user.otp);
+    console.log("user.otpExpiration:", user.otpExpiration, Date.now());
+    //pls send otp as number not string 
+    // check OTP validity
+    if (user.otp !== otp || user.otpExpiration < Date.now()) {
+        user.failedAttempts += 1;
+
+        if (user.failedAttempts >= 5) {
+            user.isBanned = true;
+            user.banExpiration = Date.now() + 5 * 60 * 1000; // 5 minutes ban
+        }
+
+        await user.save();
+        return res.status(401).json({ message: "Invalid or expired OTP", success: false });
+    }
+
+    // correct otp
     user.isVerified = true;
     user.otp = undefined;
     user.otpExpiration = undefined;
+    user.failedAttempts = 0;
+    user.isBanned = false;
+    user.banExpiration = undefined;
 
     await user.save();
 
-    return res.status(200).json({ message: "Account verify successful", success: true })
-
+    return res.status(200).json({ message: "Account verify successful", success: true });
 };
 
-//resend otp 
+
 export const resendOtp = async (req, res, next) => {
-
-    //get data email,
     const { email } = req.body;
-    //generated new otp
-    const { otp, otpExpiration } = generateOtp(5 * 60 * 1000);
-    //found user exist
-    // const userExist = await User.findOne({ email });
-    const userExist = await User.updateOne({ email }, { otp, otpExpiration });
-    if (!userExist) {
-        throw new Error("user not exist", { cause: 401 });
-    }
-    //updata otp from DB
-    // userExist.otp = otp;
-    // userExist.otpExpiration = otpExpiration;
-    // await userExist.save();
 
-    //send email
+    const user = await User.findOne({ email });
+    if (!user) throw new Error("User not exist", { cause: 401 });
+
+    // check ban
+    if (user.isBanned && user.banExpiration > Date.now()) {
+        return res.status(403).json({
+            message: "You are temporarily banned. Try again later.",
+            success: false,
+        });
+    }
+
+    // reset ban if expired
+    if (user.isBanned && user.banExpiration < Date.now()) {
+        user.failedAttempts = 0;
+        user.isBanned = false;
+        user.banExpiration = undefined;
+    }
+
+    // check if otp still valid
+    if (user.otp && user.otpExpiration > Date.now()) {
+        const timeLeft = Math.floor((user.otpExpiration - Date.now()) / 1000);
+
+      
+        await sendEmail({
+            to: email,
+            subject: "Verify your Account",
+            html: `<p>Your OTP is still valid: <b>${user.otp}</b>. It will expire in ${timeLeft} seconds.</p>`,
+        });
+
+        return res.status(200).json({
+            message: `OTP already sent. Still valid for ${timeLeft} seconds.`,
+            success: true,
+        });
+    }
+
+    // generate new otp if expired
+    const { otp, otpExpiration } = generateOtp(2 * 60 * 1000); // 2 minutes
+    user.otp = otp;
+    user.otpExpiration = otpExpiration;
+
+    await user.save();
+
     await sendEmail({
         to: email,
-        subject: "verify your Account",
-        html: `<p> The otp to verify your account is ${otp}:</p>`
-    })
-    //response
-    return res.status(200).json({ message: "resend otp successfully", success: true });
+        subject: "Verify your Account",
+        html: `<p>The new OTP to verify your account is <b>${otp}</b></p>`,
+    });
+
+    return res.status(200).json({ message: "New OTP generated and sent successfully", success: true });
 };
+
 
 export const login = async (req, res, next) => {
     const { email, phoneNumber, password } = req.body;
