@@ -75,9 +75,8 @@ export const updataPassword = async (req, res, next) => {
 }
 
 export const upLoadPicture = async (req, res, next) => {
-    const { authorization } = req.headers;
-    const { userId } = verifyTokenAccount(authorization);
-    const userExist = await User.findByIdAndUpdate(userId,
+    console.log(req.user);
+    const userExist = await User.findByIdAndUpdate(req.user._id,
         {
             profilePicture: req.file.path,
         },
