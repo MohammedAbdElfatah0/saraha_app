@@ -1,10 +1,16 @@
-import {Router} from 'express';
+import { Router } from 'express';
 import * as userService from './user.service.js';
 import { fileUpLoad } from '../../utils/multer/index.js';
+import fs from "fs";
+import { fileValidation } from '../../middleware/file_validation_middleware.js';
+
 const userRouter = Router();
 userRouter.delete("/delete/:userId", userService.deleteAccount);
-userRouter.get("/getUser", userService.getUser);
+userRouter.get("/profile", userService.getUser);
 userRouter.put("/updatePassword", userService.updataPassword);
 //upload image local in disk:::
-userRouter.post("upload-picture",fileUpLoad().single("profilePicture"),userService.upLoadPicture);
+userRouter.post("/upload-picture",
+    fileUpLoad(["image/png", "image/jpeg"]).single("profilePicture"),
+    fileValidation({ allowType: ["image/png", "image/jpeg"] })  ,
+    userService.upLoadPicture);
 export default userRouter;

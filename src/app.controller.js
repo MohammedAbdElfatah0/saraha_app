@@ -6,8 +6,8 @@ export const bootstrap = ({ app, express }) => {
     app.use(express.json());
 
     app.use("/auth", authRouter);
-    app.use("/message", messageRouter);
     app.use("/user", userRouter);
+    app.use("/message", messageRouter);
     //global error handler
     app.use((err, req, res, next) => {
         res.status(err.cause || 500).json({

@@ -2,7 +2,7 @@
 import jwt from 'jsonwebtoken';
 import { User } from './../../DB/models/user.model.js';
 import { comparePassword, hashPassword } from "../../utils/security/hashing.js";
-import { verifyToken } from '../../utils/token/verifytoken.js';
+import { verifyTokenAccount } from '../../utils/token/verifytoken.js';
 
 export const deleteAccount = async (req, res, next) => {
     const { userId } = req.params;
@@ -25,7 +25,7 @@ export const getUser = async (req, res, next) => {
     }
     // const token = authorization.split(" ")[1]; when using buffer
     const token = authorization;
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = verifyTokenAccount(token);
     if (decoded.error) {
         throw new Error("Invalid token", { cause: 401 });
     }
@@ -75,9 +75,9 @@ export const updataPassword = async (req, res, next) => {
 }
 
 export const upLoadPicture = async (req, res, next) => {
-    const token = req.headers;
-    const { id } = verifyToken(token);
-    const userExist = await User.findByIdAndUpdate(id,
+    const { authorization } = req.headers;
+    const { userId } = verifyTokenAccount(authorization);
+    const userExist = await User.findByIdAndUpdate(userId,
         {
             profilePicture: req.file.path,
         },
@@ -91,7 +91,7 @@ export const upLoadPicture = async (req, res, next) => {
     return res.status(201).json({
         message: "upload picture successfully",
         success: true,
-        data: userExist
+        data: userExist.profilePicture
     });
 
 };

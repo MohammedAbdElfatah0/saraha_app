@@ -1,7 +1,7 @@
 import multer, { diskStorage } from "multer";
 import { nanoid } from "nanoid";
 
-export function fileUpLoad() {
+export function fileUpLoad(allowedType) {
     const storage = diskStorage({
         destination: "uploads", filename: (req, file, cb) => {
             console.log(file);
@@ -9,8 +9,16 @@ export function fileUpLoad() {
         }
     }
     );
-    const fileFilter=(req,file,cb)=>{
+    //
+    const fileFilter = (req, file, cb) => {
+        if (allowedType.includes(file.mimetype )) {
 
+            cb(null, true);
+        } else {
+
+            cb(new Error("inValid format file type ", { cause: 400 },),);
+        }
     };
-    return multer({fileFilter,storage});
+    // console.log("done upload image ")
+    return multer({ fileFilter, storage });
 }

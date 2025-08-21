@@ -4,7 +4,7 @@ import { generateOtp } from './../../utils/otp/index.js';
 import { comparePassword, encryptData, hashPassword, } from '../../utils/security/index.js';
 import { generateToken } from '../../utils/token/generateToken.js';
 import RefreshToken from '../../DB/models/refresh.token.model.js';
-import generateNewAccessToken from './../../utils/token/refreahToken.js';
+import generateNewAccessToken from '../../utils/token/refreshToken.js';
 
 
 export const register = async (req, res) => {
@@ -67,6 +67,7 @@ export const register = async (req, res) => {
 
 
 }
+
 export const verifyAccount = async (req, res, next) => {
     const { email, otp } = req.body;
 
@@ -112,7 +113,6 @@ export const verifyAccount = async (req, res, next) => {
 
     return res.status(200).json({ message: "Account verify successful", success: true });
 };
-
 
 export const resendOtp = async (req, res, next) => {
     const { email } = req.body;
