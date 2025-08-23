@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import RefreshToken from "../../DB/models/refresh.token.model.js";
 import { signToken } from "./signToken.js";
 
-async function generateNewAccessToken(refreshTokenValue) {
+export async function generateNewAccessToken(refreshTokenValue) {
 
 
     const savedToken = await RefreshToken.findOne({ token: refreshTokenValue });
@@ -27,4 +27,4 @@ async function generateNewAccessToken(refreshTokenValue) {
     };
 }
 
-export default generateNewAccessToken;
+

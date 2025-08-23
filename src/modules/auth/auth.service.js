@@ -2,9 +2,9 @@ import { sendEmail } from '../../utils/email/index.js';
 import { User } from './../../DB/models/user.model.js';
 import { generateOtp } from './../../utils/otp/index.js';
 import { comparePassword, encryptData, hashPassword, } from '../../utils/security/index.js';
-import { generateToken } from '../../utils/token/generateToken.js';
+
 import RefreshToken from '../../DB/models/refresh.token.model.js';
-import generateNewAccessToken from '../../utils/token/refreshToken.js';
+import {generateNewAccessToken, generateToken } from '../../utils/token/index.js';
 
 
 export const register = async (req, res) => {
