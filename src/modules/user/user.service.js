@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import { User } from './../../DB/models/user.model.js';
 import { comparePassword, hashPassword } from "../../utils/security/hashing.js";
 import { verifyTokenAccount } from '../../utils/token/index.js';
+import fs from "fs";
 
 export const deleteAccount = async (req, res, next) => {
     const { userId } = req.params;
@@ -75,7 +76,12 @@ export const updataPassword = async (req, res, next) => {
 }
 
 export const upLoadPicture = async (req, res, next) => {
-    console.log(req.user);
+
+    //delete old picture from system and db
+    if (req.user.profilePicture) {
+        fs.unlinkSync(req.user.profilePicture);
+    }
+
     const userExist = await User.findByIdAndUpdate(req.user._id,
         {
             profilePicture: req.file.path,

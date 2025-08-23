@@ -1,9 +1,22 @@
 import multer, { diskStorage } from "multer";
 import { nanoid } from "nanoid";
-
-export function fileUpLoad(allowedType) {
+import fs from "fs";
+export function fileUpLoad({folder,allowedType=["image/png", "image/jpeg"]}={}) {
     const storage = diskStorage({
-        destination: "uploads", filename: (req, file, cb) => {
+        // destination: "uploads",
+        destination: (req, file, cd) => {
+            let destination = `uploads/${folder}/${req.user._id}`
+
+            if (!fs.existsSync(destination)) {
+                fs.mkdirSync(destination, { recursive: true });
+            }
+            cd(null, destination)
+        },
+
+
+
+
+        filename: (req, file, cb) => {
             console.log(file);
             cb(null, nanoid(5) + "_" + file.originalname);
         }
@@ -11,7 +24,7 @@ export function fileUpLoad(allowedType) {
     );
     //
     const fileFilter = (req, file, cb) => {
-        if (allowedType.includes(file.mimetype )) {
+        if (allowedType.includes(file.mimetype)) {
 
             cb(null, true);
         } else {

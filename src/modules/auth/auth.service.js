@@ -168,7 +168,7 @@ export const resendOtp = async (req, res, next) => {
     return res.status(200).json({ message: "New OTP generated and sent successfully", success: true });
 };
 
-
+// TODO::we need handle if login before check and not login in more
 export const login = async (req, res, next) => {
     const { email, phoneNumber, password } = req.body;
 
