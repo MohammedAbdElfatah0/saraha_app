@@ -4,7 +4,7 @@ import { generateOtp } from './../../utils/otp/index.js';
 import { comparePassword, encryptData, hashPassword, } from '../../utils/security/index.js';
 
 import RefreshToken from '../../DB/models/refresh.token.model.js';
-import {generateNewAccessToken, generateToken } from '../../utils/token/index.js';
+import { generateNewAccessToken, generateToken } from '../../utils/token/index.js';
 
 
 export const register = async (req, res) => {
@@ -76,6 +76,9 @@ export const verifyAccount = async (req, res, next) => {
     if (!user) {
         throw new Error("User not found", { cause: 404 });
     }
+    if (user.verifyAccount === true) {
+        throw new Error("Account already confirmed", { cause: 200 });
+    }
 
     // check if user is banned
     if (user.isBanned && user.banExpiration > Date.now()) {
@@ -119,7 +122,9 @@ export const resendOtp = async (req, res, next) => {
 
     const user = await User.findOne({ email });
     if (!user) throw new Error("User not exist", { cause: 401 });
-
+    if (user.verifyAccount === true) {
+        throw new Error("Account already confirmed", { cause: 200 });
+    }
     // check ban
     if (user.isBanned && user.banExpiration > Date.now()) {
         return res.status(403).json({
@@ -139,7 +144,7 @@ export const resendOtp = async (req, res, next) => {
     if (user.otp && user.otpExpiration > Date.now()) {
         const timeLeft = Math.floor((user.otpExpiration - Date.now()) / 1000);// take time from db without expire  
 
-      
+
         await sendEmail({
             to: email,
             subject: "already sent",
