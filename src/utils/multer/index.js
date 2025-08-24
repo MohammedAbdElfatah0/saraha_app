@@ -22,9 +22,9 @@ export function fileUpLoad({
             console.log(file);
             cb(null, nanoid(5) + "_" + file.originalname);
         },
-        limits: { fileSize: fileSize }//controller size image or file 
+
     }
-    );
+    );//storage
     //
     const fileFilter = (req, file, cb) => {
         if (allowedType.includes(file.mimetype)) {
@@ -34,7 +34,18 @@ export function fileUpLoad({
 
             cb(new Error("inValid format file type ", { cause: 400 },),);
         }
-    };
+    };// filter
+
+    const limits = { fileSize: fileSize };//limits size 
+    /**
+     * limits: {
+                fileSize: 5 * 1024 * 1024, // 5 MB
+                fieldSize: 2 * 1024 * 1024, // حجم أقصى للحقل نفسه
+                files: 3, // أقصى عدد ملفات يترفعوا
+                fields: 10, // أقصى عدد حقول عادية
+            }
+     */
+
     // console.log("done upload image ")
-    return multer({ fileFilter, storage });
+    return multer({ fileFilter, storage, limits });
 }
