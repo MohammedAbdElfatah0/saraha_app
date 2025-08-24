@@ -1,7 +1,12 @@
 import multer, { diskStorage } from "multer";
 import { nanoid } from "nanoid";
 import fs from "fs";
-export function fileUpLoad({folder,allowedType=["image/png", "image/jpeg"]}={}) {
+export function fileUpLoad({
+    folder,
+    allowedType = ["image/png", "image/jpeg"],
+    fileSize = 1048576
+} = {}
+) {
     const storage = diskStorage({
         // destination: "uploads",
         destination: (req, file, cd) => {
@@ -13,13 +18,11 @@ export function fileUpLoad({folder,allowedType=["image/png", "image/jpeg"]}={}) 
             cd(null, destination)
         },
 
-
-
-
         filename: (req, file, cb) => {
             console.log(file);
             cb(null, nanoid(5) + "_" + file.originalname);
-        }
+        },
+        limits: { fileSize: fileSize }//controller size image or file 
     }
     );
     //
