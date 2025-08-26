@@ -44,10 +44,12 @@ const userSchema = new Schema({
     },
     dob: {
         type: Date,
+        select: false
     },
     isVerified: {
         type: Boolean,
         default: false,
+        select: false
     },
     otp: {
         type: Number,
@@ -66,11 +68,15 @@ const userSchema = new Schema({
     },
 
 
-
+    //*local
+    // profilePicture: {
+    //     type: String
+    // },
+    //*cloud
     profilePicture: {
-        type: String
-    },
-
+        secure_url: { type: String },
+        public_id: { type: String }
+    }
 
 },
     {
@@ -91,7 +97,8 @@ userSchema.virtual("fullName").set(function (value) {
 
 
 userSchema.virtual("age").get(function () {
-    return new Date().getFullYear() - this.dob.getFullYear();
+    console.log("DOB value:", this.dob);
+    return new Date().getFullYear() - new Date(this.dob).getFullYear();
 });
 
 export const User = model("User", userSchema);

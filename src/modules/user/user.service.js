@@ -1,43 +1,32 @@
-
-import jwt from 'jsonwebtoken';
 import { User } from './../../DB/models/user.model.js';
 import { comparePassword, hashPassword } from "../../utils/security/hashing.js";
 import { verifyTokenAccount } from '../../utils/token/index.js';
 import fs from "fs";
-
+import cloudinary from '../../utils/cloud/cloudinary.config.js';
+import { decryptData } from '../../utils/security/index.js';
+//delete account
 export const deleteAccount = async (req, res, next) => {
-    const { userId } = req.params;
 
-    console.log("User ID to delete:", userId);
-    const deleteAccount = await User.findByIdAndDelete(userId);
-    //take id from token buffer and delete the user check if role the user is really user not anther role
-    // todo::
 
-    if (!deleteAccount) {
-        throw new Error("User not found ", { cause: 404 });
+    const user = req.user;
+    //delete from cloudinary
+
+    if (req.user.profilePicture.public_id) {
+        await cloudinary.api.delete_resources_by_prefix(`saraha_app/user/${user._id}`);
+        await cloudinary.api.delete_folder(`saraha_app/user/${user._id}`);
     }
+
+
+    //delete from db
+    await User.deleteOne({ _id: user._id });
     return res.status(200).json({ message: 'User deleted successfully', success: true });
 };
-
-export const getUser = async (req, res, next) => {
-    const { authorization } = req.headers;
-    if (!authorization) {
-        throw new Error("Authorization header is required", { cause: 400 });
-    }
-    // const token = authorization.split(" ")[1]; when using buffer
-    const token = authorization;
-    const decoded = verifyTokenAccount(token);
-    if (decoded.error) {
-        throw new Error("Invalid token", { cause: 401 });
-    }
-    const userId = decoded.userId;
-    const user = await User.findById(userId);
-    if (!user) {
-        throw new Error("User not found", { cause: 404 });
-    }
-    return res.status(200).json({ user, success: true });
+//get profile
+export const getProfile = async (req, res, next) => {
+    const  phoneNumber = decryptData(req.user.phoneNumber);
+    return res.status(200).json({ success: true, user:{...req.user,phoneNumber} });
 };
-
+//updata password
 export const updataPassword = async (req, res, next) => {
     const { authorization, oldpassword, newpassword } = req.headers;
 
@@ -74,7 +63,7 @@ export const updataPassword = async (req, res, next) => {
 
 
 }
-
+//upload picture  local
 export const upLoadPicture = async (req, res, next) => {
 
     //delete old picture from system and db
@@ -99,4 +88,20 @@ export const upLoadPicture = async (req, res, next) => {
         data: userExist.profilePicture
     });
 
+};
+//upload picture cloud
+export const upLoadPictureCloud = async (req, res, next) => {
+    //get data from req
+    const user = req.user;
+    const file = req.file;
+    const { public_id, secure_url } = await cloudinary.uploader.upload(file.path, {
+        folder: `saraha_app/user/${user._id}/profile_picture`,//location file 
+        public_id: user.profilePicture.public_id//file name
+    })
+
+    //updata to db 
+    await User.updateOne({ _id: user._id }, {
+        profilePicture: { secure_url, public_id }
+    });
+    return res.status(200).json({ message: "profile picture successfully", success: true, data: { secure_url } })
 };

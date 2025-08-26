@@ -99,7 +99,6 @@ export const verifyAccount = async (req, res, next) => {
             user.isBanned = true;
             user.banExpiration = Date.now() + 5 * 60 * 1000; // 5 minutes ban
         }
-
         await user.save();
         return res.status(401).json({ message: "Invalid or expired OTP", success: false });
     }
@@ -108,8 +107,8 @@ export const verifyAccount = async (req, res, next) => {
     user.isVerified = true;
     user.otp = undefined;
     user.otpExpiration = undefined;
-    user.failedAttempts = 0;
-    user.isBanned = false;
+    user.failedAttempts = undefined;
+    user.isBanned = undefined;
     user.banExpiration = undefined;
 
     await user.save();
@@ -122,6 +121,7 @@ export const resendOtp = async (req, res, next) => {
 
     const user = await User.findOne({ email });
     if (!user) throw new Error("User not exist", { cause: 401 });
+    //if confirmed ::
     if (user.verifyAccount === true) {
         throw new Error("Account already confirmed", { cause: 200 });
     }
@@ -195,15 +195,20 @@ export const login = async (req, res, next) => {
                     ]
                 },
             ],
-            isVerified: true // Ensure the user is verified
+            // isVerified: true // Ensure the user is verified
         }
     );
 
 
     if (!userExist) {
-        throw new Error("User not found or is not verified ", { cause: 404 });
+        throw new Error("User not found ", { cause: 404 });
+    }
+    if (userExist.verifyAccount == false) {
+        throw new Error("The account want confirming ", { cause: 404 });
+
     }
     /// Check if the password is valid
+    
     const isPasswordValid = comparePassword(password, userExist.password);
     if (!isPasswordValid) {
         throw new Error("Invalid password", { cause: 401 });
