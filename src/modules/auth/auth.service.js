@@ -208,7 +208,7 @@ export const login = async (req, res, next) => {
 
     }
     /// Check if the password is valid
-    
+
     const isPasswordValid = comparePassword(password, userExist.password);
     if (!isPasswordValid) {
         throw new Error("Invalid password", { cause: 401 });
@@ -258,3 +258,27 @@ export const refreshToken = async (req, res, next) => {
     });
 
 };
+
+export const forgetPassword = async (req, res, next) => {
+    //get data 1- token 2- otp 3-newPassword 4-email
+    const token = req.headers.authorization;
+    const { email, otp, newPassword } = req.body;
+    //check from userExists 
+    const userExists = await User.find({ email });
+    if (!userExists) {
+        res.status(401).json({ message: "user not found", success: false });
+    }
+    //check otp
+    if (otp != userExists.otp) {
+        res.status(401).json({ message: "inValid otp", success: false });
+    }
+    //check otp expired 
+    if (userExists.otpExpiration < Date.now()){
+        res.status(401).json({ message: "otp Expired", success: false });
+    }
+    //* now updata password
+    userExists.password=newPassword;
+    await userExists.save();
+    res.status(200).json({message:"successfully updated password",success:true});
+
+}

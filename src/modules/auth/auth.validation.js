@@ -1,13 +1,14 @@
 
 import Joi from 'joi';
+import { generateValidation } from '../../middleware/validation.js';
 export const registerSchema = Joi.object(
     {
-        fullName: Joi.string().min(3).max(50).required(),
-        email: Joi.string().email().required(),
-        password: Joi.string().min(6).required(),
-        confirmPassword: Joi.string().valid(Joi.ref('password')).required(),// Ensure confirmPassword matches password
-        phoneNumber: Joi.string().pattern(/^[0-9]{10}$/).required(),
-        dob: Joi.date().less('now').required(),
+        fullName: generateValidation.fullName.required(),
+        email: generateValidation.email.required(),
+        password: generateValidation.password.required(),
+        confirmPassword: generateValidation.confirmPassword('password').required(),// Ensure confirmPassword matches password
+        phoneNumber: generateValidation.phoneNumber.required(),
+        dob: generateValidation.dob.required(),
 
     }
 ).or('email', 'phoneNumber'); // At least one of email or phoneNumber must be provided
@@ -15,22 +16,31 @@ export const registerSchema = Joi.object(
 
 export const loginSchema = Joi.object(
     {
-        phoneNumber: Joi.string().pattern(/^[0-9]{10}$/),
-        email: Joi.string().email(),
-        password: Joi.string().min(5).required(),
+        phoneNumber: generateValidation.phoneNumber,
+        email: generateValidation.email,
+        password: generateValidation.password.required(),
     }
 ).or('email', 'phoneNumber'); // At least one of email or phoneNumber must be provided
 
 
-export const verifyAccount = Joi.object(
+export const verifyAccountSchema = Joi.object(
     {
-        email: Joi.string().email(),
-        otp: Joi.number()
+        email: generateValidation.email,
+        otp: generateValidation.otp
     }
 ).required();
 
-export const resendOtp = Joi.object(
+export const resendOtpSchema = Joi.object(
     {
-        email: Joi.string().email()
+        email: generateValidation.email
+    }
+).required();
+
+export const forgetPasswordSchema = Joi.object(
+    {
+        email: generateValidation.email,
+        otp: generateValidation.otp,
+        newPassword: generateValidation.password,
+        confirmPassword: generateValidation.confirmPassword("newPassword")
     }
 ).required();

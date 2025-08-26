@@ -10,8 +10,9 @@ authRouter.post("/register",
     fileUpLoad().none(),//parsing data body 
     authService.register);
 authRouter.post("/login", validation(schemaValidation.loginSchema), authService.login);
-authRouter.post("/verify-Account", validation(schemaValidation.verifyAccount), authService.verifyAccount);
-authRouter.post("/resend-otp", validation(schemaValidation.resendOtp), authService.resendOtp);
+authRouter.post("/verify-Account", validation(schemaValidation.verifyAccountSchema), authService.verifyAccount);
+authRouter.post("/resend-otp", validation(schemaValidation.resendOtpSchema), authService.resendOtp);
 authRouter.post("/refresh-token", authService.refreshToken);
-authRouter.post("/logout",isAuthenticated, authService.logout);//validation
+authRouter.post("/logout", isAuthenticated, authService.logout);//validation
+authRouter.patch("/forget-password", validation(schemaValidation.forgetPasswordSchema), authService.forgetPassword);
 export default authRouter;
