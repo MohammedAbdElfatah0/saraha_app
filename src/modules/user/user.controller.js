@@ -8,7 +8,7 @@ import { fileUpLoad as fileUploadCloud} from './../../utils/multer/multer.cloud.
 const userRouter = Router();
 userRouter.delete("/delete/:userId", isAuthenticated, userService.deleteAccount);
 userRouter.get("/profile", isAuthenticated, userService.getProfile)
-userRouter.put("/updatePassword", isAuthenticated, userService.updataPassword);
+userRouter.put("/updatePassword", isAuthenticated, userService.updataPassword);// todo:::want validation
 //upload image local in disk:::
 userRouter.post("/upload-picture",
     isAuthenticated,//auth middleware
@@ -16,7 +16,7 @@ userRouter.post("/upload-picture",
     fileValidation({ allowType: ["image/png", "image/jpeg"] }),
     userService.upLoadPicture);
 
-
+//upload image cloud
 userRouter.post("/uploads-picture-cloud",
     isAuthenticated,
     fileUploadCloud().single("profilePicture"),

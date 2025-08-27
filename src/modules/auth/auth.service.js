@@ -2,9 +2,8 @@ import { sendEmail } from '../../utils/email/index.js';
 import { User } from './../../DB/models/user.model.js';
 import { generateOtp } from './../../utils/otp/index.js';
 import { comparePassword, encryptData, hashPassword, } from '../../utils/security/index.js';
-
-import RefreshToken from '../../DB/models/refresh.token.model.js';
 import { generateNewAccessToken, generateToken } from '../../utils/token/index.js';
+import Token from '../../DB/models/token.model.js';
 
 
 export const register = async (req, res) => {
@@ -235,7 +234,7 @@ export const logout = async (req, res, next) => {
     }
 
     // Delete the refresh token from the database
-    const isDelete = await RefreshToken.findOneAndDelete({ token: authorization });
+    const isDelete = await Token.findOneAndDelete({ token: authorization });
     if (!isDelete) {
         throw new Error("token not found", { cause: 404 });
     }

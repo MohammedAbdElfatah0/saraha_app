@@ -1,6 +1,6 @@
 import { User } from './../../DB/models/user.model.js';
 import { comparePassword, hashPassword } from "../../utils/security/hashing.js";
-import { verifyTokenAccount } from '../../utils/token/index.js';
+import { verifyTokenAccess} from '../../utils/token/index.js';
 import fs from "fs";
 import cloudinary from '../../utils/cloud/cloudinary.config.js';
 import { decryptData } from '../../utils/security/index.js';
@@ -43,7 +43,7 @@ export const updataPassword = async (req, res, next) => {
     }
     // const token = authorization.split(" ")[1]; when using buffer
     const token = authorization;
-    const decoded = verifyTokenAccount(token);
+    const decoded = verifyTokenAccess(token);
     if (decoded.error) {
         throw new Error("Invalid token", { cause: 401 });
     }

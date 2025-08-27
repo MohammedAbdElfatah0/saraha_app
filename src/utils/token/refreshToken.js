@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import RefreshToken from "../../DB/models/refresh.token.model.js";
+import RefreshToken from "../../DB/models/token.model.js";
 import { signToken } from "./signToken.js";
 
 export async function generateNewAccessToken(refreshTokenValue) {
