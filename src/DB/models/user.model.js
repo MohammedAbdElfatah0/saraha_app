@@ -76,6 +76,10 @@ const userSchema = new Schema({
     profilePicture: {
         secure_url: { type: String },
         public_id: { type: String }
+    },
+    credentialUpdatedAt: {
+        type: Date,
+        default: Date.now()
     }
 
 },

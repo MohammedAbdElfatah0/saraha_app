@@ -1,8 +1,10 @@
 import express from 'express';
 import { bootstrap } from './app.controller.js';
+import dotenv from "dotenv";
+import path from "path";
+dotenv.config({ path: path.resolve("config/.env.local") })
 const app = express();
-const port = process.env.PORT ;
-
+const port = process.env.PORT;
 bootstrap({ app, express });
 
 app.listen(port, () => {

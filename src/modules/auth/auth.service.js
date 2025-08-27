@@ -277,6 +277,7 @@ export const forgetPassword = async (req, res, next) => {
     }
     //* now updata password
     userExists.password=newPassword;
+    userExists.credentialUpdatedAt=Date.now();
     await userExists.save();
     res.status(200).json({message:"successfully updated password",success:true});
 

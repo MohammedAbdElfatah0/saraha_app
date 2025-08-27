@@ -58,6 +58,7 @@ export const updataPassword = async (req, res, next) => {
     }
     // Update the password
     userExist.password = hashPassword(newpassword); // Assuming you have a method to hash the password
+    userExist.credentialUpdatedAt=Date.now();
     await userExist.save();
     return res.status(200).json({ message: 'Password updated successfully', success: true });
 
