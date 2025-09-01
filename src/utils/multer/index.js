@@ -1,7 +1,7 @@
 import multer, { diskStorage } from "multer";
 import { nanoid } from "nanoid";
 import fs from "fs";
-export function fileUpLoad({
+export function fileUpload({
     folder,
     allowedType = ["image/png", "image/jpeg"],
     fileSize = 1048576

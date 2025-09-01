@@ -59,12 +59,7 @@ export const register = async (req, res) => {
 
 
     await user.save();
-
-
-
     return res.status(201).json({ message: 'User registered successfully' });
-
-
 }
 
 export const verifyAccount = async (req, res, next) => {
@@ -194,17 +189,13 @@ export const login = async (req, res, next) => {
                     ]
                 },
             ],
-            // isVerified: true // Ensure the user is verified
+            isVerified: true // Ensure the user is verified
         }
     );
 
 
     if (!userExist) {
-        throw new Error("User not found ", { cause: 404 });
-    }
-    if (userExist.verifyAccount == false) {
-        throw new Error("The account want confirming ", { cause: 404 });
-
+        throw new Error("User not found  or not confirmed", { cause: 404 });
     }
     /// Check if the password is valid
 
@@ -278,8 +269,8 @@ export const forgetPassword = async (req, res, next) => {
     //* now updata password
     userExists.password = newPassword;
     userExists.credentialUpdatedAt = Date.now();
-    userExists.otp=undefined;
-    userExists.otpExpiration=undefined
+    userExists.otp = undefined;
+    userExists.otpExpiration = undefined
     await userExists.save();
     await Token.deleteMany({ userId: userExists._id, type: "refresh" });
     res.status(200).json({ message: "successfully updated password", success: true });

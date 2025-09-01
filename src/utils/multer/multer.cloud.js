@@ -1,5 +1,5 @@
 import multer, { diskStorage } from "multer";
-export function fileUpLoad({
+export function fileUpload({
     folder,
     allowedType = ["image/png", "image/jpeg"],
     fileSize = 1048576
