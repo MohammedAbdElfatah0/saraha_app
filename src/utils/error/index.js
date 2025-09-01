@@ -1,6 +1,7 @@
 import Token from "../../DB/models/token.model.js";
 
 import { generateToken, verifyTokenRefresh } from "../token/index.js";
+import  fs  from 'fs';
 
 
 export const globalErrorHandle = async (err, req, res, next) => {

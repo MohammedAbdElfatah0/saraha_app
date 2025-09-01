@@ -14,7 +14,7 @@ export const isAuthenticated = async (req, res, next) => {
         throw new Error("invalid Token", { cause: 401 });
 
     }
-    const userExists = await User.findById(payload.userId).select("-password").lean();//format json
+    const userExists = await User.findById(payload.userId).lean();//format json
 
 
     if (!userExists) {
@@ -22,8 +22,8 @@ export const isAuthenticated = async (req, res, next) => {
 
     }
 
-
-    if (userExists.credentialUpdatedAt > new Date(payload.iat)) {
+    //2
+    if (userExists.credentialUpdatedAt > new Date(payload.iat * 1000)) {
         throw new Error("Token expired", { cause: 401 });
 
     }

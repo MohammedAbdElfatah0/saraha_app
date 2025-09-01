@@ -1,7 +1,6 @@
 import fs from 'fs';
 import { fileTypeFromBuffer } from "file-type";
 export function fileValidation({ allowType }) {
-    console.log("start");
     return async (req, res, next) => {
         if (!req.file || !req.file.path) {
             return next(new Error("No file uploaded or file path missing"));

@@ -1,6 +1,5 @@
 import { User } from './../../DB/models/user.model.js';
 import { comparePassword, hashPassword } from "../../utils/security/hashing.js";
-import { verifyTokenAccess} from '../../utils/token/index.js';
 import fs from "fs";
 import cloudinary from '../../utils/cloud/cloudinary.config.js';
 import { decryptData } from '../../utils/security/index.js';
@@ -23,48 +22,41 @@ export const deleteAccount = async (req, res, next) => {
 };
 //get profile
 export const getProfile = async (req, res, next) => {
-    const  phoneNumber = decryptData(req.user.phoneNumber);
-    return res.status(200).json({ success: true, user:{...req.user,phoneNumber} });
+    const phoneNumber = decryptData(req.user.phoneNumber);
+    return res.status(200).json({ success: true, user: { ...req.user, phoneNumber } });
 };
 //updata password
 export const updataPassword = async (req, res, next) => {
-    const { authorization, oldpassword, newpassword } = req.headers;
-
-    if (!authorization) {
-        throw new Error("Authorization header is required", { cause: 400 });
-    }
-
-
-    console.log("request headers:", req.headers);
+    const { oldpassword, newpassword } = req.headers;
     console.log("Old Password:", oldpassword);
     console.log("New Password:", newpassword);
     if (!oldpassword || !newpassword) {
         throw new Error("Old password and new password are required", { cause: 400 });
     }
-    // const token = authorization.split(" ")[1]; when using buffer
-    const token = authorization;
-    const decoded = verifyTokenAccess(token);
-    if (decoded.error) {
-        throw new Error("Invalid token", { cause: 401 });
-    }
-    const userExist = await User.findById(decoded.userId);
-    if (!userExist) {
-        throw new Error("User not found", { cause: 404 });
-    }
+    const userExist = req.user;
     // Check if the old password is correct
     const isPasswordValid = comparePassword(oldpassword, userExist.password);
     if (!isPasswordValid) {
         throw new Error("Invalid old password", { cause: 401 });
     }
     // Update the password
-    userExist.password = hashPassword(newpassword); // Assuming you have a method to hash the password
-    userExist.credentialUpdatedAt=Date.now();
-    await userExist.save();
+    //*why not working -> lean() to object not doc
+    // userExist.password = hashPassword(newpassword); // Assuming you have a method to hash the password
+    // userExist.credentialUpdatedAt = Date.now();
+    // await userExist.save();
+
+    await User.findByIdAndUpdate(
+        req.user._id,
+        {
+            password: hashPassword(newpassword),
+            credentialUpdatedAt: Date.now(),
+        },
+    );
     return res.status(200).json({ message: 'Password updated successfully', success: true });
 
-
-}
-//upload picture  local
+};
+//upload picture  local 
+//if you want it work change of  model user 
 export const upLoadPicture = async (req, res, next) => {
 
     //delete old picture from system and db
@@ -97,7 +89,7 @@ export const upLoadPictureCloud = async (req, res, next) => {
     const file = req.file;
     const { public_id, secure_url } = await cloudinary.uploader.upload(file.path, {
         folder: `saraha_app/user/${user._id}/profile_picture`,//location file 
-        public_id: user.profilePicture.public_id//file name
+        // public_id: user.profilePicture?.public_id//file name
     })
 
     //updata to db 

@@ -6,7 +6,7 @@ import { isAuthenticated } from '../../middleware/authentication-middleware.js';
 import { fileUpLoad as fileUploadCloud} from './../../utils/multer/multer.cloud.js';
 
 const userRouter = Router();
-userRouter.delete("/delete/:userId", isAuthenticated, userService.deleteAccount);
+userRouter.delete("/delete", isAuthenticated, userService.deleteAccount);
 userRouter.get("/profile", isAuthenticated, userService.getProfile)
 userRouter.put("/updatePassword", isAuthenticated, userService.updataPassword);// todo:::want validation
 //upload image local in disk:::
