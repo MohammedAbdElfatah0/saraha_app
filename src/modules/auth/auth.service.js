@@ -31,7 +31,6 @@ export const register = async (req, res) => {
     }
     );
     if (userExists) {
-        // return res.status(400).json({ message: 'User already exists' });
         throw new Error("User already exists", { cause: 409 });
     }
 
@@ -45,7 +44,7 @@ export const register = async (req, res) => {
     });
     //generate otp
     const { otp, otpExpiration } = generateOtp(5 * 60 * 1000); // 5 minutes expiration
-
+    //TODO:encrypr otp
     user.otp = otp;
     user.otpExpiration = otpExpiration;
 
@@ -64,7 +63,7 @@ export const register = async (req, res) => {
 
 export const verifyAccount = async (req, res, next) => {
     const { email, otp } = req.body;
-
+    //TODO:dencrypr otp
     const user = await User.findOne({ email });
 
     if (!user) {
@@ -153,6 +152,7 @@ export const resendOtp = async (req, res, next) => {
 
     // generate new otp if expired
     const { otp, otpExpiration } = generateOtp(2 * 60 * 1000); // 2 minutes
+    //TODO:encrypr otp
     user.otp = otp;
     user.otpExpiration = otpExpiration;
 
@@ -261,6 +261,8 @@ export const forgetPassword = async (req, res, next) => {
     //get data 1- token 2- otp 3-newPassword 4-email
     // const token = req.headers.authorization;
     const { email, otp, newPassword } = req.body;
+
+    //TODO:Dencrypr otp
     //check from userExists 
     const userExists = await User.find({ email });
     if (!userExists) {

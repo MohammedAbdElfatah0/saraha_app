@@ -1,7 +1,7 @@
 import { User } from './../../DB/models/user.model.js';
 import { comparePassword, hashPassword } from "../../utils/security/hashing.js";
 import fs from "fs";
-import cloudinary from '../../utils/cloud/cloudinary.config.js';
+import  {  deleteFolder, uploadfile } from '../../utils/cloud/cloudinary.config.js';
 import { decryptData } from '../../utils/security/index.js';
 import Token from '../../DB/models/token.model.js';
 //delete account
@@ -13,8 +13,7 @@ export const deleteAccount = async (req, res, next) => {
     //delete from cloudinary
 
     if (req.user.profilePicture.public_id) {
-        await cloudinary.api.delete_resources_by_prefix(`saraha_app/user/${user._id}`);
-        await cloudinary.api.delete_folder(`saraha_app/user/${user._id}`);
+        await deleteFolder({folder: `saraha_app/user/${user._id}` });
     }
 
 
@@ -89,10 +88,11 @@ export const upLoadPictureCloud = async (req, res, next) => {
     //get data from req
     const user = req.user;
     const file = req.file;
-    const { public_id, secure_url } = await cloudinary.uploader.upload(file.path, {
-        folder: `saraha_app/user/${user._id}/profile_picture`,//location file 
-        // public_id: user.profilePicture?.public_id//file name
-    })
+    const { public_id, secure_url } = await uploadfile(
+        {
+            path: file.path,
+            options: { folder: `saraha_app/user/${user._id}/profile_picture` }
+        })
 
     //updata to db 
     await User.updateOne({ _id: user._id }, {
