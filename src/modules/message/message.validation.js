@@ -3,6 +3,5 @@ import { generateValidation } from "../../middleware/validation.js";
 const messageSchemaValidation=Joi.object({
     content:generateValidation.content,
     receiver:generateValidation.objectId.required(),
-    sender:generateValidation.objectId,
 });
 export {messageSchemaValidation};

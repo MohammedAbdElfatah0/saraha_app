@@ -36,3 +36,21 @@ export const sendMessage = async (req, res, next) => {
         success: true,
     })
 }
+
+
+export const getMessages = async (req, res, nest) => {
+    const { id } = req.params;
+    const isMessage = await message.findOne({ _id: id, receiver: req.user._id }, {},
+        {
+            populate:
+                [
+                    {
+                        path: "receiver",
+                        select: "-password -otp -otpExpiration -failedAttempts -isBanned -banExpiration -credentialUpdatedAt -deletedAt -createdAt -updatedAt"
+                    }]
+        });
+    if (!isMessage) {
+        throw new Error("message not found", { cause: 404 })
+    }
+    return res.status(200).json({ message: "message found", success: true, data: { isMessage } })
+}

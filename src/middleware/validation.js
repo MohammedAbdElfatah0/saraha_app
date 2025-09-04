@@ -7,7 +7,9 @@ export function validation(Schema) {
         if (error) {
             let errorMessage = error.details.map((err) => { return err.message }).join(', ');
             console.error(`Validation error: ${errorMessage}`);
-            return res.status(400).json({ message: errorMessage });
+            // return res.status(400).json({ message: errorMessage });
+        throw new Error(`validation error ${error.message}`,{cause:400});
+        
         }
         next();
     };

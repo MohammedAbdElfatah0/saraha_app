@@ -20,7 +20,7 @@ export async function uploadFiles({ files, options }) {
 }
 //delete folder ::
 export async function deleteFolder({ folder }) {
-    await cloudinary.api.delete_all_resources_by_prefix(folder);
+    await cloudinary.api.delete_all_resources(folder);
     await cloudinary.api.delete_folder(folder);
 }
 

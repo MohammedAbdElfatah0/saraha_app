@@ -261,13 +261,13 @@ export const forgetPassword = async (req, res, next) => {
     //get data 1- token 2- otp 3-newPassword 4-email
     // const token = req.headers.authorization;
     const { email, otp, newPassword } = req.body;
-
     //TODO:Dencrypr otp
     //check from userExists 
-    const userExists = await User.find({ email });
+    const userExists = await User.findOne({ email });
     if (!userExists) {
         res.status(401).json({ message: "user not found", success: false });
     }
+
     //check otp
     if (otp !== userExists.otp) {
         res.status(401).json({ message: "inValid otp", success: false });
@@ -277,11 +277,17 @@ export const forgetPassword = async (req, res, next) => {
         res.status(401).json({ message: "otp Expired", success: false });
     }
     //* now updata password
-    userExists.password = newPassword;
-    userExists.credentialUpdatedAt = Date.now();
-    userExists.otp = undefined;
-    userExists.otpExpiration = undefined
-    await userExists.save();
+    // userExists.password = newPassword;
+    // userExists.credentialUpdatedAt = Date.now();
+    // userExists.otp = undefined;
+    // userExists.otpExpiration = undefined
+    // await userExists.save();
+    await User.updateOne({ email }, {
+        password: hashPassword(newPassword),
+        otp: '',
+        otpExpiration: '',
+        credentialUpdatedAt: Date.now()
+    });
     await Token.deleteMany({ userId: userExists._id, type: "refresh" });
     res.status(200).json({ message: "successfully updated password", success: true });
 

@@ -108,6 +108,11 @@ userSchema.virtual("age").get(function () {
     console.log("DOB value:", this.dob);
     return new Date().getFullYear() - new Date(this.dob).getFullYear();
 });
+userSchema.virtual("messages",{
+    ref:"message",
+    localField:"_id",
+    foreignField:"receiver"
+});
 
 export const User = model("User", userSchema);
 

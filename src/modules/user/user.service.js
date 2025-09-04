@@ -1,7 +1,7 @@
 import { User } from './../../DB/models/user.model.js';
 import { comparePassword, hashPassword } from "../../utils/security/hashing.js";
 import fs from "fs";
-import  {  deleteFolder, uploadfile } from '../../utils/cloud/cloudinary.config.js';
+import { deleteFolder, uploadfile } from '../../utils/cloud/cloudinary.config.js';
 import { decryptData } from '../../utils/security/index.js';
 import Token from '../../DB/models/token.model.js';
 //delete account
@@ -13,7 +13,7 @@ export const deleteAccount = async (req, res, next) => {
     //delete from cloudinary
 
     if (req.user.profilePicture.public_id) {
-        await deleteFolder({folder: `saraha_app/user/${user._id}` });
+        await deleteFolder({ folder: `saraha_app/user/${user._id}` });
     }
 
 
@@ -23,8 +23,10 @@ export const deleteAccount = async (req, res, next) => {
 };
 //get profile
 export const getProfile = async (req, res, next) => {
+    const user = await User.findOne({ _id: req.user._id }, {}, { populate: { path: "messages" }}).lean();
     const phoneNumber = decryptData(req.user.phoneNumber);
-    return res.status(200).json({ success: true, user: { ...req.user, phoneNumber } });
+    console.log("user", user);
+    return res.status(200).json({ message: "done", success: true, user: { ...user, phoneNumber } });
 };
 //updata password
 export const updataPassword = async (req, res, next) => {

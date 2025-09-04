@@ -17,4 +17,5 @@ messageRouter.post("/:receiver/sender",
      validation(messageSchemaValidation),
      messageService.sendMessage);
 
+messageRouter.get("/:id", isAuthenticated, messageService.getMessages);
 export default messageRouter;
