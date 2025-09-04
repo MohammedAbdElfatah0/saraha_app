@@ -3,10 +3,12 @@ import { comparePassword, hashPassword } from "../../utils/security/hashing.js";
 import fs from "fs";
 import cloudinary from '../../utils/cloud/cloudinary.config.js';
 import { decryptData } from '../../utils/security/index.js';
+import Token from '../../DB/models/token.model.js';
 //delete account
 export const deleteAccount = async (req, res, next) => {
 
-
+    await User.updateOne({ _id: req.user._id }, { deletedAt: Date.now(), credentialUpdatedAt: Date.now() });
+    await Token.deleteMany({ userId: req.user._id });// controller for refresh token
     const user = req.user;
     //delete from cloudinary
 

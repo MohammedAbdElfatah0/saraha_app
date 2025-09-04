@@ -80,6 +80,10 @@ const userSchema = new Schema({
     credentialUpdatedAt: {
         type: Date,
         default: Date.now()
+    },
+    deletedAt: {
+        type: Date,
+
     }
 
 },

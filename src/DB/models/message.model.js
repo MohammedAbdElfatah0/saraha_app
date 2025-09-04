@@ -1,4 +1,4 @@
-import { Schema ,model} from 'mongoose';
+import { Schema, model } from 'mongoose';
 const messageSchema = new Schema(
     {
         receiver: {
@@ -17,7 +17,12 @@ const messageSchema = new Schema(
                 return true;
             }
         },
-        attachment: [{ secure_url: String, public_id: String }],
+        attachment: [
+            {
+                secure_url: String,
+                public_id: String
+            }
+        ],
         sender: {
             type: Schema.Types.ObjectId,
             ref: "User",
@@ -29,4 +34,4 @@ const messageSchema = new Schema(
     }
 );
 
-export const message = model('message',messageSchema);
+export const message = model('message', messageSchema);

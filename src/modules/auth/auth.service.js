@@ -203,6 +203,14 @@ export const login = async (req, res, next) => {
     if (!isPasswordValid) {
         throw new Error("Invalid password", { cause: 401 });
     }
+    if (userExist.deletedAt) {
+        // return res.status(200).json({
+        //     message: "account deleted",
+        //     success: false
+        // });
+        userExist.deletedAt = undefined;
+        await userExist.save();
+    }
     //generate a token for the user
     const { accessToken, refreshToken } = await generateToken({ userId: userExist._id.toHexString(), });
     //return response
