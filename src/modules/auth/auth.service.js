@@ -114,10 +114,6 @@ export const resendOtp = async (req, res, next) => {
 
     const user = await User.findOne({ email });
     if (!user) throw new Error("User not exist", { cause: 401 });
-    //if confirmed ::
-    if (user.verifyAccount === true) {
-        throw new Error("Account already confirmed", { cause: 200 });
-    }
     // check ban
     if (user.isBanned && user.banExpiration > Date.now()) {
         return res.status(403).json({
