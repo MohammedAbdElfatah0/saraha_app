@@ -2,13 +2,13 @@
 import nodemailer from "nodemailer";
 export async function sendEmail({ to, subject, html }) {
     const transport = nodemailer.createTransport({
-        // host: process.env.EMAIL_HOST , // todo env
-        service: process.env.EMAIL_SERVICE , // todo env
-        port: process.env.EMAIL_PORT , // todo env
+
+        service: process.env.EMAIL_SERVICE , 
+        port: process.env.EMAIL_PORT ,
         secure:true,
         auth: {
-            user: process.env.USER_EMAIL,//todo .env 
-            pass: process.env.PASSWORD_EMAIL,//todo .env 
+            user: process.env.USER_EMAIL,
+            pass: process.env.PASSWORD_EMAIL,
         }
     });
     await transport.sendMail({

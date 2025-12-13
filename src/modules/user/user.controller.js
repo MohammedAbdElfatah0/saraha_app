@@ -1,14 +1,15 @@
 import { Router } from 'express';
 import * as userService from './user.service.js';
-import {  fileUpload } from '../../utils/multer/index.js';
+import { fileUpload } from '../../utils/multer/index.js';
 import { fileValidation } from '../../middleware/file_validation_middleware.js';
 import { isAuthenticated } from '../../middleware/authentication-middleware.js';
-import { fileUpload as fileUploadCloud} from './../../utils/multer/multer.cloud.js';
-
+import { fileUpload as fileUploadCloud } from './../../utils/multer/multer.cloud.js';
+import { validation } from '../../middleware/validation.js';
+import { updatePasswordValidation } from "./user.validation.js"
 const userRouter = Router();
 userRouter.delete("/delete", isAuthenticated, userService.deleteAccount);
 userRouter.get("/profile", isAuthenticated, userService.getProfile)
-userRouter.put("/updatePassword", isAuthenticated, userService.updataPassword);// todo:::want validation
+userRouter.put("/updatePassword", isAuthenticated, validation(updatePasswordValidation), userService.updataPassword);
 //upload image local in disk:::
 userRouter.post("/upload-picture",
     isAuthenticated,//auth middleware

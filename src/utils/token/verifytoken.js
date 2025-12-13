@@ -2,13 +2,12 @@ import jwt from "jsonwebtoken";
 
 export function verifyTokenAccess(token) {
 
-  return jwt.verify(token, process.env.JWT_SECRET);
-  // console.log(decoded) // { userId: "...", iat: ..., exp: ... }
+  return jwt.verify(token, process.env.JWT_SECRET_KEY_ACCESS_TOKEN);
 
 }
 
 export function verifyTokenRefresh(token) {
 
-  return jwt.verify(token, process.env.JWT_REFRESH_SECRET);
+  return jwt.verify(token, process.env.JWT_SECRET_KEY_REFRESH_TOKEN);
 
 }

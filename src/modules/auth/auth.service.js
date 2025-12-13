@@ -1,7 +1,7 @@
 import { sendEmail } from '../../utils/email/index.js';
 import { User } from './../../DB/models/user.model.js';
 import { generateOtp } from './../../utils/otp/index.js';
-import { comparePassword, encryptData, hashPassword, } from '../../utils/security/index.js';
+import { comparePassword, decryptData, encryptData, hashPassword, } from '../../utils/security/index.js';
 import { generateNewAccessToken, generateToken } from '../../utils/token/index.js';
 import Token from '../../DB/models/token.model.js';
 
@@ -38,17 +38,16 @@ export const register = async (req, res) => {
     const user = new User({
         fullName,
         email,
-        password: hashPassword(password), // Hash the password
-        phoneNumber: encryptData(phoneNumber), // Encrypt the phone number
+        password: hashPassword(password),
+        phoneNumber: encryptData(phoneNumber),
         dob
     });
-    //generate otp
-    const { otp, otpExpiration } = generateOtp(5 * 60 * 1000); // 5 minutes expiration
-    //TODO:encrypr otp
-    user.otp = otp;
+
+    const { otp, otpExpiration } = generateOtp(5 * 60 * 1000);
+    user.otp = encryptData(otp);
     user.otpExpiration = otpExpiration;
 
-    //send verification email
+
     await sendEmail({
         to: email,
         subject: "verify your Account",
@@ -73,30 +72,24 @@ export const verifyAccount = async (req, res, next) => {
         throw new Error("Account already confirmed", { cause: 200 });
     }
 
-    // check if user is banned
     if (user.isBanned && user.banExpiration > Date.now()) {
         return res.status(403).json({
             message: "Too many failed attempts. Try again later.",
             success: false,
         });
     }
-    console.log("req.body.otp:", otp, typeof otp);
-    console.log("user.otp:", user.otp, typeof user.otp);
-    console.log("user.otpExpiration:", user.otpExpiration, Date.now());
-    //pls send otp as number not string 
-    // check OTP validity
-    if (user.otp !== otp || user.otpExpiration < Date.now()) {
+
+    if (decryptData(user.otp) !== otp || user.otpExpiration < Date.now()) {
         user.failedAttempts += 1;
 
         if (user.failedAttempts >= 5) {
             user.isBanned = true;
-            user.banExpiration = Date.now() + 5 * 60 * 1000; // 5 minutes ban
+            user.banExpiration = Date.now() + 10 * 60 * 1000;
         }
         await user.save();
         return res.status(401).json({ message: "Invalid or expired OTP", success: false });
     }
 
-    // correct otp
     user.isVerified = true;
     user.otp = undefined;
     user.otpExpiration = undefined;
@@ -130,14 +123,12 @@ export const resendOtp = async (req, res, next) => {
     }
 
     // check if otp still valid
-    if (user.otp && user.otpExpiration > Date.now()) {
-        const timeLeft = Math.floor((user.otpExpiration - Date.now()) / 1000);// take time from db without expire  
-
-
+    if (decryptData(user.otp) && user.otpExpiration > Date.now()) {
+        const timeLeft = Math.floor((user.otpExpiration - Date.now()) / 1000);
         await sendEmail({
             to: email,
             subject: "already sent",
-            html: `<p>Your OTP is still valid: <b>${user.otp}</b>. It will expire in ${timeLeft} seconds.</p>`,
+            html: `<p>Your OTP is still valid: <b>${decryptData(user.otp)}</b>. It will expire in ${timeLeft} seconds.</p>`,
         });
 
         return res.status(400).json({
@@ -148,8 +139,7 @@ export const resendOtp = async (req, res, next) => {
 
     // generate new otp if expired
     const { otp, otpExpiration } = generateOtp(2 * 60 * 1000); // 2 minutes
-    //TODO:encrypr otp
-    user.otp = otp;
+    user.otp = encryptData(otp);
     user.otpExpiration = otpExpiration;
 
     await user.save();
@@ -163,7 +153,6 @@ export const resendOtp = async (req, res, next) => {
     return res.status(200).json({ message: "New OTP generated and sent successfully", success: true });
 };
 
-// TODO::we need handle if login before check and not login in more
 export const login = async (req, res, next) => {
     const { email, phoneNumber, password } = req.body;
 
@@ -185,7 +174,7 @@ export const login = async (req, res, next) => {
                     ]
                 },
             ],
-            isVerified: true // Ensure the user is verified
+            isVerified: true
         }
     );
 
@@ -193,23 +182,19 @@ export const login = async (req, res, next) => {
     if (!userExist) {
         throw new Error("User not found  or not confirmed", { cause: 404 });
     }
-    /// Check if the password is valid
+
 
     const isPasswordValid = comparePassword(password, userExist.password);
     if (!isPasswordValid) {
         throw new Error("Invalid password", { cause: 401 });
     }
     if (userExist.deletedAt) {
-        // return res.status(200).json({
-        //     message: "account deleted",
-        //     success: false
-        // });
         userExist.deletedAt = undefined;
         await userExist.save();
     }
-    //generate a token for the user
+
     const { accessToken, refreshToken } = await generateToken({ userId: userExist._id.toHexString(), });
-    //return response
+
     return res.status(200).json({
         message: 'Login successful',
         success: true,
@@ -223,9 +208,8 @@ export const login = async (req, res, next) => {
 
 export const logout = async (req, res, next) => {
     const { authorization } = req.headers;
-    console.log("Logout Refresh Token:", authorization);
     if (!authorization) {
-        throw new Error("-Refresh- token is required", { cause: 400 });
+        throw new Error("Refresh token is required", { cause: 400 });
     }
 
     // Delete the refresh token from the database
@@ -239,7 +223,7 @@ export const logout = async (req, res, next) => {
 
 export const refreshToken = async (req, res, next) => {
     const { authorization } = req.headers;
-    console.log("Refresh Token:", authorization);
+
     if (!authorization) {
         throw new Error("Refresh token is required", { cause: 400 });
     }
@@ -254,8 +238,7 @@ export const refreshToken = async (req, res, next) => {
 };
 
 export const forgetPassword = async (req, res, next) => {
-    //get data 1- token 2- otp 3-newPassword 4-email
-    // const token = req.headers.authorization;
+
     const { email, otp, newPassword } = req.body;
     //TODO:Dencrypr otp
     //check from userExists 
@@ -265,19 +248,14 @@ export const forgetPassword = async (req, res, next) => {
     }
 
     //check otp
-    if (otp !== userExists.otp) {
+    if (otp !== decryptData(userExists.otp)) {
         res.status(401).json({ message: "inValid otp", success: false });
     }
     //check otp expired 
     if (userExists.otpExpiration < Date.now()) {
         res.status(401).json({ message: "otp Expired", success: false });
     }
-    //* now updata password
-    // userExists.password = newPassword;
-    // userExists.credentialUpdatedAt = Date.now();
-    // userExists.otp = undefined;
-    // userExists.otpExpiration = undefined
-    // await userExists.save();
+
     await User.updateOne({ email }, {
         password: hashPassword(newPassword),
         otp: '',

@@ -23,7 +23,6 @@ const TokenSchema = new Schema({
     }
 },{
     timestamps: true,
-    // versionKey: false
 });
 const Token = model('Token', TokenSchema);
 export default Token;

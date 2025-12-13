@@ -1,9 +1,9 @@
 import { Router } from 'express';
-import * as authService from './auth.service.js';
-import { validation } from '../../middleware/validation.js';
-import *as schemaValidation from './auth.validation.js';
-import { fileUpload } from './../../utils/multer/index.js';
 import { isAuthenticated } from '../../middleware/authentication-middleware.js';
+import { validation } from '../../middleware/validation.js';
+import { fileUpload } from './../../utils/multer/index.js';
+import * as authService from './auth.service.js';
+import * as schemaValidation from './auth.validation.js';
 const authRouter = Router();
 authRouter.post("/register",
     validation(schemaValidation.registerSchema),

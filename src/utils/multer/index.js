@@ -19,7 +19,6 @@ export function fileUpload({
         },
 
         filename: (req, file, cb) => {
-            console.log(file);
             cb(null, nanoid(5) + "_" + file.originalname);
         },
 
@@ -46,6 +45,5 @@ export function fileUpload({
             }
      */
 
-    // console.log("done upload image ")
     return multer({ fileFilter, storage, limits });
 }

@@ -1,6 +1,6 @@
-// import dotenv from "dotenv";
-// import path from "path";
-// dotenv.config({ path: path.resolve("config/.env.local") })
+import dotenv from "dotenv";
+import path from "path";
+dotenv.config({ path: path.resolve(".env") })
 
 import express from 'express';
 import { bootstrap } from './app.controller.js';
@@ -16,7 +16,6 @@ schedule.scheduleJob("1 */5 * * * *",
             await deleteFolder({ folder: `saraha_app/user/${user._id}` });
         }
         await User.deleteMany({ _id: { $in: users.map(user => user._id) } });
-        console.log("deleted");
     });
 const app = express();
 const port = process.env.PORT;

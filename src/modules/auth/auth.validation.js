@@ -6,7 +6,7 @@ export const registerSchema = Joi.object(
         fullName: generateValidation.fullName.required(),
         email: generateValidation.email.required(),
         password: generateValidation.password.required(),
-        confirmPassword: generateValidation.confirmPassword('password').required(),// Ensure confirmPassword matches password
+        confirmPassword: generateValidation.confirmPassword('password').required(),
         phoneNumber: generateValidation.phoneNumber.required(),
         dob: generateValidation.dob.required(),
 
@@ -20,8 +20,7 @@ export const loginSchema = Joi.object(
         email: generateValidation.email,
         password: generateValidation.password.required(),
     }
-).or('email', 'phoneNumber'); // At least one of email or phoneNumber must be provided
-
+).or('email', 'phoneNumber'); 
 
 export const verifyAccountSchema = Joi.object(
     {

@@ -11,14 +11,14 @@ export async function generateNewAccessToken(refreshTokenValue) {
         throw new Error("No refresh token found for this user", { cause: 401 });
     }
 
-    const decoded = jwt.verify(savedToken.token, process.env.JWT_REFRESH_SECRET);
+    const decoded = jwt.verify(savedToken.token, process.env.JWT_SECRET_KEY_REFRESH_TOKEN);
 
     if (!decoded || !decoded.userId) {
         throw new Error("Invalid or expired token payload", { cause: 401 });
     }
     const accessToken = signToken(
         { userId: decoded.userId },
-        process.env.JWT_SECRET,
+        process.env.JWT_SECRET_KEY_ACCESS_TOKEN,
         process.env.JWT_EXPIRATION
     )
 

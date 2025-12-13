@@ -22,7 +22,6 @@ export const isAuthenticated = async (req, res, next) => {
 
     }
 
-    //2
     if (userExists.credentialUpdatedAt > new Date(payload.iat * 1000)) {
         throw new Error("Token expired", { cause: 401 });
 

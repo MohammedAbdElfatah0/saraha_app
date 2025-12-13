@@ -25,14 +25,11 @@ export const deleteAccount = async (req, res, next) => {
 export const getProfile = async (req, res, next) => {
     const user = await User.findOne({ _id: req.user._id }, {}, { populate: { path: "messages" }}).lean();
     const phoneNumber = decryptData(req.user.phoneNumber);
-    console.log("user", user);
     return res.status(200).json({ message: "done", success: true, user: { ...user, phoneNumber } });
 };
 //updata password
 export const updataPassword = async (req, res, next) => {
     const { oldpassword, newpassword } = req.headers;
-    console.log("Old Password:", oldpassword);
-    console.log("New Password:", newpassword);
     if (!oldpassword || !newpassword) {
         throw new Error("Old password and new password are required", { cause: 400 });
     }
@@ -42,11 +39,7 @@ export const updataPassword = async (req, res, next) => {
     if (!isPasswordValid) {
         throw new Error("Invalid old password", { cause: 401 });
     }
-    // Update the password
-    //*why not working -> lean() to object not doc
-    // userExist.password = hashPassword(newpassword); // Assuming you have a method to hash the password
-    // userExist.credentialUpdatedAt = Date.now();
-    // await userExist.save();
+
 
     await User.findByIdAndUpdate(
         req.user._id,

@@ -18,13 +18,13 @@ const userSchema = new Schema({
         type: String,
         required: function () {
             if (this.phoneNumber) {
-                return false; // Email is not required if phoneNumber is provided
+                return false; 
             }
-            return true; // Email is required if phoneNumber is not provided
+            return true; 
         },
         trim: true,
         lowercase: true,
-        // unique: true,
+      
     },
     password: {
         type: String,
@@ -35,9 +35,9 @@ const userSchema = new Schema({
 
         required: function () {
             if (this.email) {
-                return false; // phoneNumber is not required if phoneNumber is provided
+                return false; 
             }
-            return true; // phoneNumber is required if phoneNumber is not provided
+            return true; 
         },
         // trim: true,
         // unique: true,
@@ -96,7 +96,6 @@ userSchema.virtual("fullName",).get(function () {
     return `${this.firstName} ${this.lastName}`;
 });
 userSchema.virtual("fullName").set(function (value) {
-    //  [this.firstName, this.lastName] = value.split(" ");
     const [firstName, lastName] = value.split(" ");
     this.firstName = firstName;
     this.lastName = lastName;
