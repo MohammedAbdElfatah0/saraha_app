@@ -3,6 +3,8 @@ import { connectDB } from './DB/connects.js';
 import { authRouter, messageRouter, userRouter } from './modules/index.js';
 import { globalErrorHandle } from './utils/error/index.js';
 export const bootstrap = ({ app, express }) => {
+    //for solve request as x-forwaeded-for
+    app.set('trust proxy', 1);
     //handle rate limit 
     const limiter = rateLimit({
         windowMs: 60 * 1000, //1min
@@ -11,8 +13,8 @@ export const bootstrap = ({ app, express }) => {
             throw new Error(options.message, { cause: options.statusCode });
         },
         legacyHeaders: false,
-        skipSuccessfulRequests:true,
-        identifier:(req,res,next)=>{
+        skipSuccessfulRequests: true,
+        identifier: (req, res, next) => {
             return req.ip;
         }
     })
