@@ -19,7 +19,7 @@ export const generateValidation = {
     confirmPassword: (ref) => Joi.string().valid(Joi.ref(ref)),
     phoneNumber: Joi.string().pattern(/^[0-9]{10}$/),
     dob: Joi.date().less('now'),
-    otp: Joi.number(),
+    otp: Joi.string(),
     objectId: Joi.string().hex().length(24),
     content: Joi.string().min(3).max(1000),
 }
