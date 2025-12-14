@@ -29,8 +29,8 @@ export const getProfile = async (req, res, next) => {
 };
 //updata password
 export const updataPassword = async (req, res, next) => {
-    const { oldpassword, newpassword } = req.body;
-    if (!oldpassword || !newpassword) {
+    const { oldpassword, newPassword } = req.body;
+    if (!oldpassword || !newPassword) {
         throw new Error("Old password and new password are required", { cause: 400 });
     }
     const userExist = req.user;
@@ -44,7 +44,7 @@ export const updataPassword = async (req, res, next) => {
     await User.findByIdAndUpdate(
         req.user._id,
         {
-            password: hashPassword(newpassword),
+            password: hashPassword(newPassword),
             credentialUpdatedAt: Date.now(),
         },
     );
