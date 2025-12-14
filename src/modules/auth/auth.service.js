@@ -207,13 +207,13 @@ export const login = async (req, res, next) => {
 };
 
 export const logout = async (req, res, next) => {
-    const { refreshToken } = req.headers;
-    if (!refreshToken) {
+    const { refreshtoken } = req.headers;
+    if (!refreshtoken) {
         throw new Error("Refresh token is required", { cause: 400 });
     }
 
     // Delete the refresh token from the database
-    const isDelete = await Token.findOneAndDelete({ token: refreshToken });
+    const isDelete = await Token.findOneAndDelete({ token: refreshtoken });
     if (!isDelete) {
         throw new Error("token not found", { cause: 404 });
     }
