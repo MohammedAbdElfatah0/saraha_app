@@ -29,7 +29,7 @@ export const getProfile = async (req, res, next) => {
 };
 //updata password
 export const updataPassword = async (req, res, next) => {
-    const { oldpassword, newpassword } = req.headers;
+    const { oldpassword, newpassword } = req.body;
     if (!oldpassword || !newpassword) {
         throw new Error("Old password and new password are required", { cause: 400 });
     }
