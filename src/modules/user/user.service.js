@@ -23,13 +23,14 @@ export const deleteAccount = async (req, res, next) => {
 };
 //get profile
 export const getProfile = async (req, res, next) => {
-    const user = await User.findOne({ _id: req.user._id }, {}, { populate: { path: "messages" }}).lean();
+    const user = await User.findOne({ _id: req.user._id }, {}, { populate: { path: "messages" } }).lean();
     const phoneNumber = decryptData(req.user.phoneNumber);
     return res.status(200).json({ message: "done", success: true, user: { ...user, phoneNumber } });
 };
 //updata password
 export const updataPassword = async (req, res, next) => {
     const { oldpassword, newPassword } = req.body;
+    console.log({ req: req.body });
     if (!oldpassword || !newPassword) {
         throw new Error("Old password and new password are required", { cause: 400 });
     }
