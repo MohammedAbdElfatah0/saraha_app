@@ -2,8 +2,8 @@
 
 ## 📌 Introduction
 
-Saraha Application Backend is a RESTful API that powers an anonymous messaging platform.
-Users can send messages to others whether they know them or not, with optional image attachments.
+- Saraha Application Backend is a RESTful API that powers an anonymous messaging platform.
+- Users can send messages to others whether they know them or not, with optional image attachments.
 
 ---
 
